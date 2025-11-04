@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café com Leite</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">☕ Café com Leite</div>
+      <button class="hamburger" id="hamburger">☰</button>
+      <ul class="menu" id="menu">
+        <li><a href="#inicio">Início</a></li>
+        <li><a href="#cardapio">Cardápio</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="conteudo"></main>
+
+  <footer>
+    © 2025 Café com Leite - Todos os direitos reservados.
+  </footer>
+
+  <!-- TEMPLATES DAS PÁGINAS -->
+  <template id="inicio">
+    <section class="hero">
+      <h1>Bem-vindo ao Café com Leite</h1>
+      <p>O sabor que aquece a sua manhã e alegra seu dia ☕</p>
+      <button class="btn" onclick="carregarPagina('cardapio')">Ver Cardápio</button>
+    </section>
+    <section class="hero2">
+      <h2>Nossa meta</h2>
+      <p>Prezamos por prestar um ótimo atendimento e criar um ambiente acolhedor que traga memórias e uma experiência única a nossos clientes.</p>
+      <br>
+      <h3>Localização</h3>
+      <p>Rua dos Ipês, N-2432</p>
+    </section>
+  </template>
+
+  <template id="cardapio">
+    <h1>Nosso Cardápio</h1>
+    <div class="cards">
+      <div class="card"><img src="XICARA.jfif" alt="Café Expresso"><h2>Expresso</h2><p>Forte e encorpado, feito com grãos selecionados.</p></div>
+      <div class="card"><img src="OIP.jfif" alt="Cappuccino"><h2>Cappuccino</h2><p>Equilíbrio perfeito entre café, leite e espuma cremosa.</p></div>
+      <div class="card"><img src="pao.jpg" alt="Pão de queijo"><h2>Pão de Queijo</h2><p>Tradicional e irresistível, direto do forno!</p></div>
+      <div class="card"><img src="chocolate.jpg" alt="Chocolate Quente"><h2>Chocolate Quente</h2><p>Doce na medida certa, opção irresistível!</p></div>
+      <div class="card"><img src="sanduiche natural.jpg" alt="Sanduíche Natural"><h2>Sanduíche Natural</h2><p>Nos sabores de frango, presunto e queijo, peito de peru e ricota.</p></div>
+      <div class="card"><img src="croissant.jpg" alt="Croissant"><h2>Croissant</h2><p>Clássica massa francesa nos sabores doce e salgado.</p></div>
+      <div class="card"><img src="bolo.jpg" alt="Fatia de Bolo"><h2>Fatia de Bolo</h2><p>Bolo de cenoura, chocolate e leitinho trufado.</p></div>
+      <div class="card"><img src="Torta Paulista 03.JPG" alt="Torta Paulista"><h2>Torta Paulista</h2><p>Doce tradicional que agrada todos os paladares!</p></div>
+      <div class="card"><img src="pudim.jpg" alt="Pudim de leite condensado"><h2>Pudim</h2><p>Um clássico das sobremesas brasileiras.</p></div>
+    </div>
+  </template>
+
+  <template id="contato">
+    <h1>Fale Conosco</h1>
+    <form id="formContato">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" required placeholder="email@exemplo.com">
+
+      <label for="mensagem">Mensagem</label>
+      <textarea id="mensagem" name="mensagem" rows="4" required placeholder="Escreva sua mensagem..."></textarea>
+
+      <button type="submit" class="btn">Enviar</button>
+    </form>
+    <div id="feedback" class="alert" style="display:none;"></div>
+  </template>
+
+  <!-- JAVASCRIPT SPA + VALIDAÇÃO -->
+  <script>
+    const conteudo = document.getElementById("conteudo");
+    const menu = document.getElementById("menu");
+    const hamburger = document.getElementById("hamburger");
+
+    // Alternar menu mobile
+    hamburger.addEventListener("click", () => menu.classList.toggle("active"));
+
+    // Carrega a página ao clicar nos links
+    document.querySelectorAll(".menu a").forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const pagina = link.getAttribute("href").replace("#", "");
+        carregarPagina(pagina);
+        menu.classList.remove("active");
+      });
+    });
+
+    // Função de carregar templates
+    function carregarPagina(pagina) {
+      const template = document.getElementById(pagina);
+      if (template) conteudo.innerHTML = template.innerHTML;
+
+      // Se for contato, ativa o JS do formulário
+      if (pagina === "contato") inicializarFormulario();
+    }
+
+    // Validação e armazenamento do formulário
+    function inicializarFormulario() {
+      const form = document.getElementById("formContato");
+      const feedback = document.getElementById("feedback");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const nome = form.nome.value.trim();
+        const email = form.email.value.trim();
+        const mensagem = form.mensagem.value.trim();
+
+        if (!nome || !email || !mensagem) {
+          feedback.style.display = "block";
+          feedback.textContent = "Por favor, preencha todos os campos.";
+          feedback.className = "alert erro";
+          return;
+        }
+
+        if (!email.includes("@") || !email.includes(".")) {
+          feedback.style.display = "block";
+          feedback.textContent = "Por favor, insira um e-mail válido.";
+          feedback.className = "alert erro";
+          return;
+        }
+
+        // Salva no localStorage
+        const dados = { nome, email, mensagem, data: new Date().toLocaleString() };
+        localStorage.setItem("ultimoContato", JSON.stringify(dados));
+
+        feedback.style.display = "block";
+        feedback.textContent = "Mensagem enviada com sucesso!";
+        feedback.className = "alert sucesso";
+        form.reset();
+      });
+    }
+
+    // Carrega a página inicial ao abrir
+    carregarPagina("inicio");
+  </script>
+</body>
+</html>
